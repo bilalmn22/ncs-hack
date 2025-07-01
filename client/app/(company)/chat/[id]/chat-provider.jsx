@@ -9,7 +9,7 @@ import React, {
 } from "react";
 import { io } from "socket.io-client";
 
-const API_BASE_URL = "http://192.168.101.243:8080";
+const API_BASE_URL = process.env.NEXT_PUBLIC_CHAT_HOST || "http://localhost:8080";
 
 const ChatContext = createContext({});
 function ChatProvider({ children, roomId }) {
