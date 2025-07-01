@@ -43,7 +43,7 @@ export const uploadFile = async (file) => {
 
 export const setCookieValue = async ({ token, user }) => {
   const CookieStore = await cookies();
-  console.log({ token });
+  console.log({ token, user });
   CookieStore.set({
     name: "auth_token",
     value: token,

@@ -73,12 +73,11 @@ export default function Component() {
       });
 
       const { data } = await response.json();
-      await setCookieValue(data?.login);
 
       if (response.ok) {
         setSuccessMessage(data.message || "Login successful!");
-        // Here you would typically redirect or update app state
-        console.log("Login successful:", data.user);
+
+        await setCookieValue(data?.login);
       } else {
         setErrors({ general: data.error || "Login failed. Please try again." });
       }

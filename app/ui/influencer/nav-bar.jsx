@@ -13,6 +13,11 @@ const links = [
     href: "/influencer/proposals",
     label: "Proposals",
   },
+ 
+  {
+    href: "/influencer/chat",
+    label: "Chat",
+  }
 ];
 
 export default function NavBar() {
