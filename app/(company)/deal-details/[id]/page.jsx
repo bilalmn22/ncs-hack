@@ -10,107 +10,22 @@ import {
   Check,
   X,
   Calendar,
-  DollarSign,
   Instagram,
-  Youtube,
   Facebook,
   ExternalLink,
   Mail,
   Phone,
-  Eye,
-  Heart,
   FileText,
 } from "lucide-react";
-import Image from "next/image";
-import { useState, useEffect, use } from "react";
+import { useState, useEffect, use, useMemo } from "react";
 import NavBar from "@/app/ui/components/nav-bar";
 import { getData } from "@/app/lib/data";
 import { getJobRequestById } from "@/app/lib/queries";
 import { useJwtContext } from "@/app/jwt-provider";
 import { apiUrl } from "@/app/lib/utils";
 import { updateJobRequest } from "@/app/lib/mutations";
-import Link from "next/link";
-
-// Mock data - replace with real API call
-const mockDealRequest = {
-  id: 1,
-  status: "pending",
-  suggestedPrice: 150,
-  createdAt: "2024-01-15T10:30:00Z",
-  applicationMessage:
-    "I'm really excited about this campaign! I've been following your brand for a while and love your products. My audience is primarily young women aged 18-25 who are interested in skincare and beauty. I have great engagement rates and would love to create authentic content that showcases your vitamin C serum in my daily routine. I've worked with similar brands before and always deliver high-quality content on time.",
-  availableStartDate: "2024-01-20T00:00:00Z",
-  portfolioLinks: [
-    "https://tiktok.com/@user/video1",
-    "https://instagram.com/p/example1",
-    "https://youtube.com/watch?v=example2",
-  ],
-  campaign: {
-    title: "Promote Our Vitamin C Serum on TikTok",
-    company: "GlowSkin Cosmetics",
-    originalPrice: 80,
-  },
-  influencer: {
-    id: 1,
-    fullName: "Sarah Johnson",
-    email: "sarah.johnson@email.com",
-    phone: "+1 (555) 123-4567",
-    photo: "/placeholder.svg?height=150&width=150",
-    bio: "Beauty & lifestyle content creator passionate about skincare and wellness. I love sharing authentic reviews and tutorials with my community. I've been creating content for 3+ years and have worked with over 50 brands.",
-    location: "Los Angeles, CA",
-    followerCount: 45000,
-    engagementRate: 4.2,
-    joinedDate: "2021-03-15T00:00:00Z",
-    socialMedia: {
-      instagram: "@sarahjohnson",
-      tiktok: "@sarahj_beauty",
-      youtube: "Sarah Johnson Beauty",
-      facebook: "Sarah Johnson Official",
-    },
-    stats: {
-      totalPosts: 342,
-      avgLikes: 1850,
-      avgComments: 125,
-      avgShares: 45,
-      totalViews: 2500000,
-    },
-    recentWork: [
-      {
-        platform: "TikTok",
-        title: "Morning Skincare Routine",
-        views: 125000,
-        likes: 8500,
-        comments: 420,
-        image: "/placeholder.svg?height=200&width=200",
-        date: "2024-01-10T00:00:00Z",
-      },
-      {
-        platform: "Instagram",
-        title: "Product Review: Vitamin C Serum",
-        views: 45000,
-        likes: 3200,
-        comments: 180,
-        image: "/placeholder.svg?height=200&width=200",
-        date: "2024-01-08T00:00:00Z",
-      },
-      {
-        platform: "YouTube",
-        title: "My Complete Skincare Routine",
-        views: 89000,
-        likes: 4100,
-        comments: 320,
-        image: "/placeholder.svg?height=200&width=200",
-        date: "2024-01-05T00:00:00Z",
-      },
-    ],
-    previousBrands: [
-      "Beauty Co",
-      "Glow Labs",
-      "Skin Essentials",
-      "Pure Beauty",
-    ],
-  },
-};
+import { createUserIfNotExists, initiateChatRoom } from "@/app/lib/chat-init";
+import { useRouter } from "next/navigation";
 
 export default function DealRequestDetails({ params }) {
   const { id: requestId } = use(params);
@@ -118,6 +33,7 @@ export default function DealRequestDetails({ params }) {
   const [loading, setLoading] = useState(true);
   const [processing, setProcessing] = useState(false);
   const { decodedToken } = useJwtContext();
+  const [loadingChat, setLoadingChat] = useState(false);
 
   useEffect(() => {
     // Simulate API call
@@ -148,15 +64,6 @@ export default function DealRequestDetails({ params }) {
     });
   };
 
-  const formatNumber = (num) => {
-    if (num >= 1000000) {
-      return `${(num / 1000000).toFixed(1)}M`;
-    } else if (num >= 1000) {
-      return `${(num / 1000).toFixed(1)}K`;
-    }
-    return num.toString();
-  };
-
   const getStatusColor = (status) => {
     switch (status?.toLowerCase()) {
       case "pending":
@@ -169,6 +76,7 @@ export default function DealRequestDetails({ params }) {
         return "bg-gray-100 text-gray-800 border-gray-200";
     }
   };
+  const router = useRouter();
 
   const handleAcceptDeal = async () => {
     setProcessing(true);
@@ -202,6 +110,48 @@ export default function DealRequestDetails({ params }) {
     } finally {
       setProcessing(false);
     }
+  };
+
+  const currentUser = useMemo(() => {
+    return {
+      id: decodedToken?.id,
+      username: decodedToken?.name,
+      type: decodedToken?.role == "influencer" ? "freelancer" : "client",
+      pfp: decodedToken?.pfp || "/placeholder.svg",
+    };
+  }, []);
+  const handleContactInfluencer = () => {
+    const initChat = async () => {
+      setLoadingChat(true);
+      try {
+        // Create or get current user
+        await createUserIfNotExists(currentUser);
+
+        const info = requestData.influencer;
+        const influencerUser = {
+          id: info._id,
+          username: info.fullName || info.title,
+          type: "freelancer",
+          pfp: info.photo || "/placeholder.svg",
+        };
+
+        await createUserIfNotExists(influencerUser);
+
+        // Initialize chat room
+        const room = await initiateChatRoom([
+          currentUser.id,
+          influencerUser.id,
+        ]);
+
+        router.push(`/chat/${room.chatRoomId}`);
+      } catch (error) {
+        console.error("Error initializing chat:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    initChat();
   };
 
   if (loading) {
@@ -377,61 +327,6 @@ export default function DealRequestDetails({ params }) {
                 </div>
               </CardContent>
             </Card>
-
-            {/* Recent Work
-            <Card className="bg-white shadow-sm">
-              <CardHeader>
-                <CardTitle className="text-xl text-[#141414]">
-                  Recent Work
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {requestData.influencer.recentWork.map((work, index) => (
-                    <Card key={index} className="overflow-hidden border">
-                      <div className="aspect-video relative">
-                        <Image
-                          src={work.image || "/placeholder.svg"}
-                          alt={work.title}
-                          fill
-                          className="object-cover"
-                        />
-                        <div className="absolute top-2 left-2">
-                          <Badge
-                            variant="secondary"
-                            className="text-xs bg-black/70 text-white"
-                          >
-                            {work.platform}
-                          </Badge>
-                        </div>
-                      </div>
-                      <CardContent className="p-4">
-                        <h5 className="font-medium text-[#141414] mb-2 line-clamp-2">
-                          {work.title}
-                        </h5>
-                        <div className="flex items-center justify-between text-xs text-[#64748b] mb-2">
-                          <span>{formatDate(work.date)}</span>
-                        </div>
-                        <div className="flex items-center gap-4 text-xs text-[#64748b]">
-                          <div className="flex items-center gap-1">
-                            <Eye className="w-3 h-3" />
-                            <span>{formatNumber(work.views)}</span>
-                          </div>
-                          <div className="flex items-center gap-1">
-                            <Heart className="w-3 h-3" />
-                            <span>{formatNumber(work.likes)}</span>
-                          </div>
-                          <div className="flex items-center gap-1">
-                            <MessageCircle className="w-3 h-3" />
-                            <span>{formatNumber(work.comments)}</span>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-              </CardContent>
-            </Card> */}
           </div>
 
           {/* Sidebar - Right Side */}
@@ -463,14 +358,21 @@ export default function DealRequestDetails({ params }) {
                   </div>
                 </div>
 
-                <Button className="w-full  bg-[#2563eb] hover:bg-[#1c5ae2] text-white">
-                  <Link
-                    href={`/chat/${requestData.influencer._id}`}
-                    className="w-full justify-center items-center flex h-full "
-                  >
-                    <MessageCircle className="w-4 h-4 mr-2" />
-                    Start Chat
-                  </Link>
+                <Button
+                  className="w-full bg-[#2563eb] hover:bg-[#1c5ae2] text-white"
+                  onClick={handleContactInfluencer}
+                >
+                  {loadingChat ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                      Loading Chat...
+                    </>
+                  ) : (
+                    <>
+                      <MessageCircle className="w-4 h-4 mr-2" />
+                      Contact Influencer
+                    </>
+                  )}
                 </Button>
               </CardContent>
             </Card>

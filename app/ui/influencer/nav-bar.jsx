@@ -17,7 +17,7 @@ export default function NavBar() {
             <a href="#" className="text-[#141414] font-medium hover:text-[#2563eb] transition-colors">
               Browse
             </a>
-            <a href="#" className="text-[#64748b] hover:text-[#141414] transition-colors">
+            <a href="/influencer/offers" className="text-[#64748b] hover:text-[#141414] transition-colors">
               Offers
             </a>
             <a href="#" className="text-[#64748b] hover:text-[#141414] transition-colors">
