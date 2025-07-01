@@ -1,2 +1,2 @@
 "use client";
-export const apiUrl = "http://192.168.101.243:8000";
+export const apiUrl = process.env.NEXT_PUBLIC_BACKEND_HOST;
