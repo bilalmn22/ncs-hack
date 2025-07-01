@@ -27,7 +27,7 @@ const sidebarItems = [
 ];
 
 const bottomItems = [
-  { icon: MessageSquare, label: "Messages", badge: "2" },
+  { icon: MessageSquare, label: "Messages", href: "/chat", badge: "2" },
   { icon: Bell, label: "Notifications", badge: "2" },
   { icon: Settings, label: "Settings" },
   { icon: LogOut, label: "Logout" },
@@ -107,7 +107,8 @@ function SideNav() {
 
           <div className="mt-8 space-y-1">
             {bottomItems.map((item, index) => (
-              <button
+              <Link
+                href={item.href || "#"}
                 key={index}
                 className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-left text-[#71839b] hover:bg-[#f5f5f5] transition-colors"
                 onClick={() => setSidebarOpen(false)}
@@ -119,7 +120,7 @@ function SideNav() {
                     {item.badge}
                   </Badge>
                 )}
-              </button>
+              </Link>
             ))}
           </div>
         </nav>
