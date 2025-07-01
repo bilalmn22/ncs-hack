@@ -131,3 +131,47 @@ query GetJobRequest($getJobRequestId: ID!, $companyId: ID!) {
   }
 }
 `;
+
+export const getCompanyPofile = `
+query CompanyProfile($id: ID) {
+  companyProfile(id: $id) {
+    company {
+      _id
+      title
+      photo
+      email
+      phoneNumber
+      role
+      description
+      createdAt
+      banned
+      isVerified
+      moneySpent
+    }
+  }
+}
+`;
+
+export const getInfluencerProfile = `
+query CompanyProfile($id: ID) {
+  influencerProfile(id: $id) {
+    influencer {
+      _id
+      fullName
+      photo
+      email
+      phoneNumber
+      role
+      description
+      createdAt
+      banned
+      isVerified
+      moneyMade
+      socialMedia
+      idCardUrl
+      introVideo
+      birthday
+    }
+  }
+}
+`;

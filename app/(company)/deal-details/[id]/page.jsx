@@ -29,6 +29,7 @@ import { getJobRequestById } from "@/app/lib/queries";
 import { useJwtContext } from "@/app/jwt-provider";
 import { apiUrl } from "@/app/lib/utils";
 import { updateJobRequest } from "@/app/lib/mutations";
+import Link from "next/link";
 
 // Mock data - replace with real API call
 const mockDealRequest = {
@@ -201,11 +202,6 @@ export default function DealRequestDetails({ params }) {
     } finally {
       setProcessing(false);
     }
-  };
-
-  const handleContactInfluencer = () => {
-    // Navigate to chat page
-    window.location.href = `/chat/${requestData.influencer.id}`;
   };
 
   if (loading) {
@@ -467,12 +463,14 @@ export default function DealRequestDetails({ params }) {
                   </div>
                 </div>
 
-                <Button
-                  className="w-full bg-[#2563eb] hover:bg-[#1c5ae2] text-white"
-                  onClick={handleContactInfluencer}
-                >
-                  <MessageCircle className="w-4 h-4 mr-2" />
-                  Start Chat
+                <Button className="w-full  bg-[#2563eb] hover:bg-[#1c5ae2] text-white">
+                  <Link
+                    href={`/chat/${requestData.influencer._id}`}
+                    className="w-full justify-center items-center flex h-full "
+                  >
+                    <MessageCircle className="w-4 h-4 mr-2" />
+                    Start Chat
+                  </Link>
                 </Button>
               </CardContent>
             </Card>
