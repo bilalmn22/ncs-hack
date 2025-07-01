@@ -18,7 +18,7 @@ export default function Chat({ params }) {
   const [selectedFile, setSelectedFile] = useState(null);
   const fileInputRef = useRef(null);
 
-  const API_BASE_URL = "http://192.168.101.243:8080";
+  const API_BASE_URL = "http://192.168.145.244:8080";
 
   const fileUpload = async (file) => {
     return "";
