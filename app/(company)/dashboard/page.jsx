@@ -3,25 +3,25 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import LayoutProvider from "../layout-provider";
 import Table from "@/app/ui/company/dashboard/job-requests-table";
+import { getData } from "@/app/lib/data";
+import { cookies } from "next/headers";
+import { jwtDecode } from "jwt-decode";
+import { getJobRequests } from "@/app/lib/queries";
 
-export default function Dashboard() {
+export default async function Dashboard() {
   const invoices = [
     { date: "March, 01, 2025", id: "#MS-415646", amount: "$180" },
     { date: "February, 10, 2025", id: "#RV-126749", amount: "$250" },
     { date: "April, 05, 2025", id: "#FB-212562", amount: "$560" },
   ];
+  const CookieStore = await cookies();
+  const token = CookieStore.get("auth_token")?.value || null;
+  const decodedToken = token ? jwtDecode(token) : null;
 
-  const influencers = Array(10)
-    .fill(null)
-    .map((_, i) => ({
-      name: "Khaby Lame",
-      tiktok: "500k",
-      youtube: "500k",
-      instagram: "500k",
-      facebook: "500k",
-      price: "700$",
-    }));
-
+  const { data } = await getData(getJobRequests, {
+    companyId: decodedToken?.id,
+  });
+  console.log({data})
   return (
     <LayoutProvider>
       <div>
@@ -96,7 +96,7 @@ export default function Dashboard() {
           </div>
         </div>
         {/* Data Table */}
-        <Table influencers={influencers} />
+        <Table jobRequests={data?.getCompanyJobRequests} />
       </div>
     </LayoutProvider>
   );

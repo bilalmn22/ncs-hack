@@ -56,3 +56,9 @@ mutation PostJob( $userid: ID!, $postJobRequestInput: postJobRequestInput) {
   }
 }
 `
+
+export const updateJobRequest = `
+mutation UpdateJobRequestStatus($companyId: ID!, $status: String!, $jobId: ID!) {
+  updateJobRequestStatus(companyId: $companyId, status: $status, id: $jobId)
+}
+  `

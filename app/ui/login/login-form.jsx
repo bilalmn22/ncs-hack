@@ -1,8 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -11,6 +9,9 @@ import Image from "next/image";
 import { loginUser } from "@/app/lib/mutations";
 import { apiUrl } from "@/app/lib/utils";
 import { setCookieValue } from "@/app/lib/action";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+
 
 export default function Component() {
   const [showPassword, setShowPassword] = useState(false);
@@ -72,8 +73,8 @@ export default function Component() {
         }),
       });
 
-      const {data} = await response.json();
-      console.log(data)
+      const { data } = await response.json();
+      console.log(data);
       await setCookieValue(data?.login?.token);
 
       if (response.ok) {

@@ -18,7 +18,6 @@ export const getData = async (query, variables = {}) => {
         variables,
       }),
     });
-
     const data = await response.json();
 
     if (!response.ok) {

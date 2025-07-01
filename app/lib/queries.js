@@ -28,7 +28,6 @@ query GetInfluencerFeed($getInfluencerFeedId: ID!) {
 }
 `;
 
-
 export const getJobDetails = `
 query PreviewJob($previewJobId: ID!, $user: ID!) {
   previewJob(id: $previewJobId, user: $user) {
@@ -55,4 +54,80 @@ query PreviewJob($previewJobId: ID!, $user: ID!) {
     }
   }
 }
-`
+`;
+
+export const getJobRequests = `
+query GetCompanyJobRequests($companyId: ID!) {
+  getCompanyJobRequests(companyId: $companyId) {
+    _id
+    description
+    attachments {
+      link
+      kind
+    }
+    price
+    influencer {
+      _id
+      fullName
+      photo
+      email
+      phoneNumber
+      role
+      description
+      createdAt
+      banned
+      isVerified
+      moneyMade
+      socialMedia
+      idCardUrl
+      introVideo
+      birthday
+    }
+    job
+    createdAt
+  }
+}
+`;
+
+export const getJobRequestById = `
+query GetJobRequest($getJobRequestId: ID!, $companyId: ID!) {
+  getJobRequest(id: $getJobRequestId, companyId: $companyId) {
+    _id
+    description
+    price
+    status
+    influencer {
+      _id
+      fullName
+      photo
+      email
+      phoneNumber
+      role
+      description
+      createdAt
+      banned
+      isVerified
+      moneyMade
+      socialMedia
+      idCardUrl
+      introVideo
+      birthday
+    }
+    job {
+      _id
+      title
+      price
+      company {
+        title
+        photo
+        _id
+      }
+    }
+    createdAt
+    attachments {
+      link
+      kind
+    }
+  }
+}
+`;
