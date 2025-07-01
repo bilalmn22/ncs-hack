@@ -15,6 +15,7 @@ import {
 import Image from "next/image";
 import { apiUrl } from "@/app/lib/utils";
 import { createInfluencer } from "@/app/lib/mutations";
+import { useRouter } from "next/navigation";
 
 export default function RegisterForm() {
   const [currentStep, setCurrentStep] = useState(1);
@@ -23,6 +24,7 @@ export default function RegisterForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState({});
   const [successMessage, setSuccessMessage] = useState("");
+  const router = useRouter();
 
   const [formData, setFormData] = useState({
     fullName: "",
@@ -127,7 +129,6 @@ export default function RegisterForm() {
         method: "POST",
         body: formData,
       });
-      console.log({ response });
 
       if (!response.ok) {
         throw new Error("File upload failed");
@@ -179,10 +180,11 @@ export default function RegisterForm() {
       console.log({ response });
 
       const data = await response.json();
-      console.log({ data });
 
-      if (response.ok && data.success) {
-        setSuccessMessage(data.message);
+      if (response.ok) {
+        setSuccessMessage("Registration successful! You can now log in.");
+        setErrors({});
+        router.push("/login");
       } else {
         setErrors({
           general: data.error || "Registration failed. Please try again.",
@@ -196,8 +198,6 @@ export default function RegisterForm() {
     } finally {
       setIsLoading(false);
     }
-
-  
   };
 
   const renderStep1 = () => (

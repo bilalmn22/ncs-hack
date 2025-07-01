@@ -6,7 +6,7 @@ import { Users } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { useJwtContext } from "@/app/jwt-provider";
-const API_BASE_URL = "http://192.168.145.244:8080";
+const API_BASE_URL = "http://192.168.101.243:8080";
 
 export default function ConversationsSideBar({ roomId }) {
   const { decodedToken } = useJwtContext();

@@ -12,7 +12,6 @@ import { setCookieValue } from "@/app/lib/action";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
-
 export default function Component() {
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
@@ -74,8 +73,7 @@ export default function Component() {
       });
 
       const { data } = await response.json();
-      console.log(data);
-      await setCookieValue(data?.login?.token);
+      await setCookieValue(data?.login);
 
       if (response.ok) {
         setSuccessMessage(data.message || "Login successful!");

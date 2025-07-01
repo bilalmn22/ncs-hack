@@ -1,5 +1,6 @@
 "use server";
 import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 
 const apiUrl = process.env.NEXT_PUBLIC_BACKEND_HOST;
 
@@ -40,7 +41,7 @@ export const uploadFile = async (file) => {
   return data;
 };
 
-export const setCookieValue = async (token) => {
+export const setCookieValue = async ({ token, user }) => {
   const CookieStore = await cookies();
   console.log({ token });
   CookieStore.set({
@@ -50,4 +51,9 @@ export const setCookieValue = async (token) => {
     httpOnly: true,
     sameSite: "Lax",
   });
+  if (user.role === "influencer") {
+    redirect("/influencer/jobs");
+  } else {
+    redirect("/dashboard");
+  }
 };

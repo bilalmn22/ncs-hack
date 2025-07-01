@@ -7,15 +7,16 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Eye, EyeOff, AlertCircle, CheckCircle, Camera } from "lucide-react";
 import Image from "next/image";
 import { apiUrl } from "@/app/lib/utils";
-import { createCompany, createInfluencer } from "@/app/lib/mutations";
+import { createCompany } from "@/app/lib/mutations";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function RegisterForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState({});
   const [successMessage, setSuccessMessage] = useState("");
-
+const router = useRouter()
   const [formData, setFormData] = useState({
     companyName: "",
     email: "",
@@ -107,8 +108,6 @@ export default function RegisterForm() {
         phoneNumber: formData.phoneNumber,
         description: "",
       };
-      console.log({ registrationData });
-
       const response = await fetch(apiUrl + "/graphql", {
         method: "POST",
         headers: {
@@ -121,13 +120,12 @@ export default function RegisterForm() {
           },
         }),
       });
-      console.log({ response });
 
       const data = await response.json();
-      console.log({ data });
 
       if (response.ok) {
         setSuccessMessage("Company registered successfully!");
+ 
         setFormData({
           companyName: "",
           email: "",
@@ -136,6 +134,7 @@ export default function RegisterForm() {
           phoneNumber: "",
         });
         setErrors({});
+        router.push("/login"); // Redirect to login page after successful registration
         // Optionally redirect or perform other actions after successful registration
       } else {
         setErrors({
